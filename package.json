@@ -1,0 +1,15 @@
+{
+  "name": "MeadowlarkTravel",
+  "version": "1.0.0",
+  "description": "Meadowlark Travel is a fictious company in Oregon.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Luis Blanco",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.10.2",
+    "express-handlebars": "^1.1.0"
+  }
+}
