@@ -4,18 +4,11 @@
 
 var express = require('express');
 var fortune = require('./lib/fortune.js');
+var bodyParser = require('body-parser');
 
 var app = express();
 
 var port = 4390;
-
-//var fortunes = [
-//    "Conquer your fears or they will conquer you.",
-//    "Rivers need springs.",
-//    "Do not fear what you don't know.",
-//    "You will have a pleasant surprise.",
-//    "Whenever possible, keep it simple.",
-//];
 
 app.set('port', process.env.PORT || port);
 
@@ -26,19 +19,41 @@ var handlebars = require('express-handlebars').create({defaultLayout: 'main'});
 app.engine('handlebars', handlebars.engine);
 app.set('view engine', 'handlebars');
 
+// middleware
+app.use(bodyParser());
+
+// testing middleware
+app.use(function(request, response, next){
+    response.locals.showTests = app.get('end') !== 'production' && request.query.test === '1';
+    next();
+});
+
+app.get('/tours/hood-river', function(request, response){
+    response.render('tours/hood-river');
+});
+
+app.get('/tours/request-group-rate', function(request, response){
+    response.render('tours/request-group-rate');
+});
+
 // routes
 app.get('/', function (request, response) {
-    //response.type('text/plain');
-    //response.send('Meadowlark Travel');
     response.render('home');
 });
 
 app.get('/about', function (request, response) {
-    //response.type('text/plain');
-    //response.send('Meadowlark Travel About');
-    //var randomFortune = fortune.getFortune();
+    response.render('about', {fortune: fortune.getFortune(), pageTestScript: '/qa/tests-about.js'});
+});
 
-    response.render('about', {fortune: fortune.getFortune()});
+app.post('/process', function(request, response){
+    if (request.xhr || request.accepts('json,html')==='json'){
+        // If there were an error, we should send { error: 'error description'}
+        response.send({success: true});
+    }
+    else{
+        // If there were an error, we would redirect to an error page.
+        request.redirect(303, '/thank-you');
+    }
 });
 
 // custom 404 page. Catch-all handler middleware.
